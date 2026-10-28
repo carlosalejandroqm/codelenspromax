@@ -1,0 +1,50 @@
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.meter__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.meter__label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.meter__value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.meter__unit {
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 1px;
+}
+
+/* El track es un paso mas claro del mismo color del relleno. */
+.meter__track {
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--meter-fill) 16%, var(--surface-2));
+  overflow: hidden;
+}
+
+.meter__fill {
+  height: 100%;
+  background: var(--meter-fill);
+  border-radius: 0 4px 4px 0;
+  transition: width 0.4s ease;
+}
+
+.meter__status {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}

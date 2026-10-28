@@ -1,0 +1,258 @@
+[
+  {
+    "ruleMatch": "^SQLI-",
+    "title": "Parametrizar todas las consultas a base de datos",
+    "action": "Reescribe cada consulta detectada usando sentencias preparadas o parametros nombrados: el SQL queda fijo y los valores viajan aparte. Si usas un ORM, aprovecha su capa de consultas en lugar de SQL en crudo. Cuando de verdad necesites SQL dinamico, construye solo la estructura (nombres de tabla o columna) desde una lista blanca cerrada, nunca desde la entrada del usuario.",
+    "rationale": "La inyeccion SQL sigue siendo la via mas directa para extraer la base de datos completa, escalar privilegios o borrar datos. Es barata de explotar, facil de automatizar y no deja alternativa: no hay configuracion que mitigue una consulta concatenada.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo con revision de seguridad",
+    "priority": "P0",
+    "references": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+      "https://cwe.mitre.org/data/definitions/89.html"
+    ]
+  },
+  {
+    "ruleMatch": "^CMDI-",
+    "title": "Eliminar la construccion dinamica de comandos del sistema",
+    "action": "Sustituye las llamadas a la shell por APIs nativas del lenguaje (manejo de archivos, red, compresion). Cuando el comando externo sea imprescindible, invocalo sin shell, pasa los argumentos como lista y valida cada valor contra una lista blanca de valores permitidos.",
+    "rationale": "Una inyeccion de comandos entrega ejecucion de codigo en el servidor con los privilegios del proceso. Desde ahi el atacante lee secretos del entorno, se mueve por la red interna y persiste.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo con revision de seguridad",
+    "priority": "P0",
+    "references": ["https://cheatsheetseries.owasp.org/cheatsheets/OS_Command_Injection_Defense_Cheat_Sheet.html"]
+  },
+  {
+    "ruleMatch": "^CODE-EVAL",
+    "title": "Retirar la evaluacion dinamica de codigo",
+    "action": "Reemplaza eval y equivalentes por un parser especifico del formato que esperas (JSON, un evaluador de expresiones con operaciones permitidas) o por un mapa explicito de funciones invocables por nombre.",
+    "rationale": "eval convierte cualquier dato en codigo ejecutable. Basta con que una sola ruta de entrada llegue hasta ahi para perder el control del proceso.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P0",
+    "references": ["https://cwe.mitre.org/data/definitions/95.html"]
+  },
+  {
+    "ruleMatch": "^XSS-",
+    "title": "Escapar toda salida hacia el navegador",
+    "action": "Usa el binding de texto del framework (textContent, interpolacion, th:text) en lugar de escribir HTML. Cuando de verdad necesites renderizar HTML del usuario, pasalo por un sanitizador con lista blanca (DOMPurify, el DomSanitizer de Angular) y anade una Content-Security-Policy que prohiba scripts en linea.",
+    "rationale": "Un XSS permite robar sesiones, modificar lo que ve la victima y ejecutar acciones en su nombre. En aplicaciones con sesion por cookie equivale a suplantar al usuario, incluido un administrador.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de frontend",
+    "priority": "P1",
+    "references": ["https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"]
+  },
+  {
+    "ruleMatch": "^PATH-TRAVERSAL",
+    "title": "Confinar el acceso a archivos dentro de un directorio base",
+    "action": "Normaliza la ruta resultante y comprueba que sigue estando dentro del directorio permitido antes de abrirla. Mejor todavia: no aceptes nombres de archivo del usuario, usa identificadores opacos y resuelve la ruta real en el servidor.",
+    "rationale": "Con una ruta relativa el atacante sale del directorio previsto y alcanza configuracion, claves o archivos del sistema; si el flujo escribe, puede sobrescribirlos.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P1",
+    "references": ["https://cwe.mitre.org/data/definitions/22.html"]
+  },
+  {
+    "ruleMatch": "^DESERIALIZE-",
+    "title": "Sustituir la deserializacion de objetos por formatos de datos",
+    "action": "Cambia a JSON o Protobuf con un esquema explicito. Si la serializacion binaria es inevitable, usa el cargador seguro del parser (yaml.safe_load, SafeConstructor) y valida la firma de los datos antes de deserializarlos.",
+    "rationale": "Deserializar datos no confiables permite instanciar clases del classpath y encadenarlas hasta obtener ejecucion remota de codigo. Es la raiz de incidentes como Log4Shell y las cadenas de commons-collections.",
+    "effort": "HIGH",
+    "ownerRole": "Equipo de desarrollo con revision de seguridad",
+    "priority": "P0",
+    "references": ["https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html"]
+  },
+  {
+    "ruleMatch": "^XXE-",
+    "title": "Endurecer los parsers XML",
+    "action": "Desactiva DOCTYPE y las entidades externas en la factoria del parser, o cambia a una libreria endurecida por defecto (defusedxml). Anade la configuracion en un punto unico para que no se olvide en el siguiente parser que se cree.",
+    "rationale": "XXE permite leer archivos del servidor y lanzar peticiones desde su red interna, ademas de provocar caidas por expansion de entidades.",
+    "effort": "LOW",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P1",
+    "references": ["https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html"]
+  },
+  {
+    "ruleMatch": "^SSRF-",
+    "title": "Validar los destinos de las peticiones salientes",
+    "action": "Resuelve el host, rechaza direcciones privadas, de enlace local y de metadatos cloud, y acepta solo dominios de una lista blanca. Centraliza las llamadas externas en un cliente unico que aplique esta validacion.",
+    "rationale": "Con SSRF el servidor se convierte en el proxy del atacante hacia la red interna, incluidos los endpoints de metadatos que entregan credenciales del cloud.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo con revision de seguridad",
+    "priority": "P1",
+    "references": ["https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html"]
+  },
+  {
+    "ruleMatch": "^(SECRET-|DEP-.*798)",
+    "title": "Sacar los secretos del repositorio y rotarlos",
+    "action": "Mueve cada valor a variables de entorno o a un gestor de secretos (Vault, AWS Secrets Manager, Azure Key Vault). Despues rota obligatoriamente toda credencial que haya estado en el codigo y purga el valor del historial de git con git-filter-repo. Anade un hook de pre-commit con deteccion de secretos para que no vuelva a entrar.",
+    "rationale": "Un secreto versionado se considera comprometido desde el momento en que se subio: queda en el historial, en los forks, en los clones locales y en las copias de seguridad. Quitarlo del HEAD no lo revoca; solo la rotacion lo hace.",
+    "effort": "MEDIUM",
+    "ownerRole": "Seguridad y DevOps",
+    "priority": "P0",
+    "references": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html",
+      "https://docs.github.com/en/code-security/secret-scanning/about-secret-scanning"
+    ]
+  },
+  {
+    "ruleMatch": "^DEP-",
+    "title": "Actualizar las dependencias con vulnerabilidades conocidas",
+    "action": "Sube cada paquete a la version corregida indicada en el hallazgo, empezando por los criticos. Fija las versiones con un archivo de bloqueo y anade un escaneo de dependencias al pipeline para que una nueva vulnerabilidad se detecte sin intervencion manual.",
+    "rationale": "Estas vulnerabilidades son publicas y tienen exploits disponibles: no requieren que el atacante entienda tu codigo, solo que identifique la version que usas.",
+    "effort": "LOW",
+    "ownerRole": "Mantenimiento de dependencias",
+    "priority": "P0",
+    "references": ["https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/"]
+  },
+  {
+    "ruleMatch": "^CRYPTO-WEAK",
+    "title": "Migrar a algoritmos criptograficos vigentes",
+    "action": "Cambia los hashes a SHA-256 o SHA-3 para integridad y a bcrypt, scrypt o Argon2 para contrasenas. Sustituye DES, 3DES y RC4 por AES-256-GCM. Planifica la migracion de los datos ya almacenados con el algoritmo antiguo.",
+    "rationale": "MD5 y SHA-1 tienen colisiones practicas y los cifrados retirados se rompen con hardware asequible. Una vez publicado el metodo, la proteccion que ofrecen es nominal.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo con revision de seguridad",
+    "priority": "P1",
+    "references": ["https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html"]
+  },
+  {
+    "ruleMatch": "^CRYPTO-(ECB|HARDCODED|INSECURE)",
+    "title": "Corregir el uso de la criptografia",
+    "action": "Usa modos autenticados con nonce aleatorio por operacion (AES-GCM), genera IV y salt de forma aleatoria en cada uso y emplea un generador criptografico (SecureRandom, crypto.randomBytes, secrets) para cualquier valor que proteja algo.",
+    "rationale": "Un algoritmo correcto mal usado no protege: con ECB se filtra la estructura del texto claro, con IV fijo se repiten los textos cifrados y con un PRNG estadistico los tokens se pueden predecir.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo con revision de seguridad",
+    "priority": "P1",
+    "references": ["https://cwe.mitre.org/data/definitions/329.html"]
+  },
+  {
+    "ruleMatch": "^TLS-",
+    "title": "Restaurar la validacion del transporte cifrado",
+    "action": "Vuelve a activar la verificacion de certificados y exige TLS 1.2 como minimo. Si el problema es un certificado interno, anade la CA corporativa al almacen de confianza en lugar de desactivar la comprobacion. Cambia los endpoints http por https.",
+    "rationale": "Sin validacion de certificado el cifrado no aporta nada: cualquiera en la ruta puede presentarse como el servidor legitimo, leer las credenciales y modificar las respuestas.",
+    "effort": "LOW",
+    "ownerRole": "DevOps / Plataforma",
+    "priority": "P0",
+    "references": ["https://cwe.mitre.org/data/definitions/295.html"]
+  },
+  {
+    "ruleMatch": "^CONFIG-CORS",
+    "title": "Cerrar la politica de CORS",
+    "action": "Declara la lista exacta de origenes permitidos por entorno y no combines nunca el comodin con credenciales. Manten la configuracion en un unico lugar para que el valor de desarrollo no llegue a produccion.",
+    "rationale": "Con CORS abierto y cookies de sesion, cualquier pagina que visite la victima puede leer y ejecutar operaciones en tu API con su identidad.",
+    "effort": "LOW",
+    "ownerRole": "DevOps / Plataforma",
+    "priority": "P1",
+    "references": ["https://cwe.mitre.org/data/definitions/942.html"]
+  },
+  {
+    "ruleMatch": "^(CONFIG-CSRF|AUTH-)",
+    "title": "Reforzar la autorizacion y la proteccion de sesion",
+    "action": "Mantén la proteccion CSRF activa en los flujos con cookies, verifica siempre la firma del JWT indicando el algoritmo esperado y comprueba rol y propiedad del recurso en cada endpoint que modifica estado, no solo en la interfaz.",
+    "rationale": "El control de acceso roto es la categoria mas explotada del OWASP Top 10: no requiere herramientas, basta cambiar un identificador en la peticion.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo con revision de seguridad",
+    "priority": "P0",
+    "references": ["https://owasp.org/Top10/A01_2021-Broken_Access_Control/"]
+  },
+  {
+    "ruleMatch": "^CONFIG-(DEBUG|OPEN-BIND|PERMISSIVE|CONTAINER|DOCKER|K8S)",
+    "title": "Endurecer la configuracion de despliegue",
+    "action": "Controla el modo debug por variable de entorno y desactivalo en produccion, ejecuta los contenedores con un usuario sin privilegios, fija las versiones de las imagenes base, retira los privilegios elevados de los manifiestos y aplica el permiso minimo a los archivos.",
+    "rationale": "La mayoria de las brechas no empiezan en el codigo sino en un despliegue permisivo: una traza de error con rutas internas o un contenedor root convierten un fallo menor en un compromiso completo.",
+    "effort": "LOW",
+    "ownerRole": "DevOps / Plataforma",
+    "priority": "P1",
+    "references": ["https://owasp.org/Top10/A05_2021-Security_Misconfiguration/"]
+  },
+  {
+    "ruleMatch": "^ERROR-",
+    "title": "Corregir el manejo de errores",
+    "action": "Registra cada excepcion con contexto suficiente y decide explicitamente si se propaga, se reintenta o se degrada. Hacia el cliente devuelve un mensaje generico con un identificador de correlacion y deja el detalle solo en el log del servidor.",
+    "rationale": "Un catch vacio convierte un fallo en un estado silencioso e incoherente; una traza devuelta al cliente le regala al atacante el mapa de rutas, versiones y estructura interna.",
+    "effort": "LOW",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P2",
+    "references": ["https://cwe.mitre.org/data/definitions/209.html"]
+  },
+  {
+    "ruleMatch": "^HEALTH-COMPLEXITY",
+    "title": "Simplificar las funciones mas ramificadas",
+    "action": "Extrae cada rama significativa a una funcion con nombre propio, aplica clausulas de guarda para salir temprano y sustituye las cadenas de condicionales por tablas de decision o polimorfismo. Escribe la prueba antes de refactorizar.",
+    "rationale": "La complejidad ciclomatica se correlaciona directamente con la densidad de defectos: cada rama duplica los caminos que habria que probar, y en la practica nunca se prueban todos.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P2",
+    "references": ["https://en.wikipedia.org/wiki/Cyclomatic_complexity"]
+  },
+  {
+    "ruleMatch": "^HEALTH-DUPLICATION",
+    "title": "Unificar los bloques de codigo duplicados",
+    "action": "Extrae el bloque repetido a una funcion, modulo o componente compartido y reemplaza cada copia por una llamada. Empieza por los clones con mas copias, que son los que mas coste de mantenimiento generan.",
+    "rationale": "Con codigo duplicado cada correccion hay que aplicarla varias veces y siempre se olvida alguna: es el origen tipico del defecto que reaparece despues de haberlo arreglado.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P2",
+    "references": []
+  },
+  {
+    "ruleMatch": "^HEALTH-(LONG-FILE|LONG-FUNCTION|DEEP-NESTING)",
+    "title": "Repartir las unidades de codigo sobredimensionadas",
+    "action": "Separa los archivos por responsabilidad agrupando lo que cambia junto, divide las funciones largas en pasos con nombre descriptivo e invierte las condiciones para reducir el anidamiento.",
+    "rationale": "Los archivos y funciones grandes concentran responsabilidades, generan conflictos de merge constantes y obligan a leer cientos de lineas para entender un cambio de tres.",
+    "effort": "MEDIUM",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P3",
+    "references": []
+  },
+  {
+    "ruleMatch": "^DEBT-DISABLED-TEST",
+    "title": "Recuperar o retirar las pruebas desactivadas",
+    "action": "Revisa cada prueba ignorada: arreglala si sigue siendo valida o borrala si ya no aplica. Prohibe en la revision de codigo que se mezclen pruebas marcadas como ignoradas sin un ticket asociado.",
+    "rationale": "Una suite con pruebas desactivadas reporta una cobertura que no existe, y es exactamente la parte que nadie esta validando.",
+    "effort": "LOW",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P2",
+    "references": []
+  },
+  {
+    "ruleMatch": "^DEBT-(TODO|FIXME|COMMENTED)",
+    "title": "Convertir la deuda declarada en trabajo rastreable",
+    "action": "Transforma cada marca TODO o FIXME en una tarea del backlog con responsable e impacto, y borra la que ya no aplique. Elimina el codigo comentado: el control de versiones ya guarda el historial.",
+    "rationale": "Las marcas en comentarios no se planifican ni se revisan: son trabajo pendiente invisible para quien decide las prioridades, y envejecen hasta que nadie recuerda por que estaban ahi.",
+    "effort": "LOW",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P3",
+    "references": []
+  },
+  {
+    "ruleMatch": "^DEBT-DEBUG-OUTPUT",
+    "title": "Sustituir las impresiones de depuracion por logging",
+    "action": "Cambia las llamadas a consola por el logger del proyecto con el nivel adecuado, o elimina la linea si solo servia durante el desarrollo.",
+    "rationale": "Las impresiones sueltas no tienen nivel ni contexto, no se pueden desactivar por entorno y a menudo terminan volcando datos personales o tokens al log.",
+    "effort": "LOW",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P3",
+    "references": []
+  },
+  {
+    "ruleMatch": "^DEBT-(BROAD-EXCEPTION|MAGIC-NUMBER|DEPRECATED)",
+    "title": "Limpiar los antipatrones de robustez",
+    "action": "Captura solo los tipos de excepcion que sabes manejar, sustituye las esperas fijas por espera sobre una condicion observable y migra las APIs marcadas como obsoletas antes de que se retiren.",
+    "rationale": "Son problemas que no rompen hoy pero convierten cualquier incidente futuro en una investigacion larga: el error real queda oculto y el comportamiento depende del tiempo.",
+    "effort": "LOW",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P3",
+    "references": []
+  },
+  {
+    "ruleMatch": "^LOG-INJECTION",
+    "title": "Sanear lo que se escribe en los logs",
+    "action": "Escapa los saltos de linea de los valores registrados y usa logging estructurado con parametros en lugar de concatenar entrada del usuario en el mensaje.",
+    "rationale": "Permite falsificar lineas de log para ocultar actividad y, en motores con interpolacion, ejecutar expresiones; es el vector que convirtio un log en Log4Shell.",
+    "effort": "LOW",
+    "ownerRole": "Equipo de desarrollo",
+    "priority": "P2",
+    "references": ["https://cwe.mitre.org/data/definitions/117.html"]
+  }
+]

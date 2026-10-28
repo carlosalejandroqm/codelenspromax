@@ -1,0 +1,64 @@
+// Estilos compartidos por login y registro.
+:host {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 2rem 16px;
+}
+
+.auth {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.auth__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+}
+
+.auth__title {
+  font-size: 1.35rem;
+  margin-bottom: 0.3rem;
+}
+
+.auth__lead {
+  margin: 0 0 1.4rem;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.auth__submit {
+  width: 100%;
+  margin-top: 0.4rem;
+}
+
+.auth__alt {
+  margin: 1.2rem 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.alert {
+  margin-bottom: 1rem;
+}
+
+.field__error {
+  font-size: 0.78rem;
+  color: var(--status-critical);
+}

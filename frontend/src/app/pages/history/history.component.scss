@@ -1,0 +1,43 @@
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.head h1 {
+  font-size: 1.6rem;
+}
+
+.head__lead {
+  margin: 0.4rem 0 0;
+  color: var(--text-secondary);
+}
+
+.empty .btn {
+  margin-top: 0.75rem;
+}
+
+.project {
+  font-weight: 600;
+}
+
+.grade {
+  font-weight: 700;
+}
+
+.verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.verdict__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--verdict);
+}

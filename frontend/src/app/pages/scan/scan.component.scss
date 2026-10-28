@@ -1,0 +1,228 @@
+.head {
+  margin-bottom: 1.5rem;
+}
+
+.head h1 {
+  font-size: 1.6rem;
+}
+
+.head__lead {
+  margin: 0.4rem 0 0;
+  max-width: 70ch;
+  color: var(--text-secondary);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.side {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  margin-bottom: 1.1rem;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+}
+
+.tabs__tab {
+  flex: 1;
+  padding: 0.5rem 0.6rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.tabs__tab--active {
+  background: var(--surface-1);
+  color: var(--text-primary);
+  box-shadow: var(--shadow);
+}
+
+.drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 2rem 1rem;
+  border: 1.5px dashed var(--axis);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.drop--over {
+  border-color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 8%, transparent);
+}
+
+.drop__icon {
+  color: var(--text-muted);
+}
+
+.drop__text,
+.drop__file {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.drop__file {
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.drop .btn {
+  cursor: pointer;
+}
+
+.drop + .field__hint {
+  display: block;
+  margin-top: 0.6rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.start {
+  width: 100%;
+  margin-top: 1.2rem;
+  padding: 0.75rem;
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 0.7rem;
+}
+
+.step__dot {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--axis);
+  color: #fff;
+}
+
+.step[data-state='running'] .step__dot {
+  border-color: var(--accent);
+}
+
+.step[data-state='done'] .step__dot {
+  background: var(--status-good);
+  border-color: var(--status-good);
+}
+
+.step[data-state='failed'] .step__dot {
+  background: var(--status-critical);
+  border-color: var(--status-critical);
+}
+
+.step__label {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.step__service {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.step__detail {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.step[data-state='failed'] .step__detail {
+  color: var(--status-critical);
+}
+
+.spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid color-mix(in oklab, var(--accent) 30%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s;
+  }
+}
+
+.alert {
+  margin-top: 1rem;
+}
+
+.engine {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  margin: 0;
+
+  dt {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  dd {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

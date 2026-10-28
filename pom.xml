@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.codelens</groupId>
+  <artifactId>codelens-pro-max</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <name>CodeLens Pro Max</name>
+  <description>Plataforma de microservicios para analisis de vulnerabilidades y salud de codigo</description>
+
+  <modules>
+    <module>gateway</module>
+    <module>source-service</module>
+    <module>analysis-service</module>
+    <module>report-service</module>
+    <module>user-service</module>
+  </modules>
+
+  <properties>
+    <java.version>21</java.version>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring-boot.version>3.3.4</spring-boot.version>
+    <spring-cloud.version>2023.0.3</spring-cloud.version>
+    <jgit.version>6.9.0.202403050737-r</jgit.version>
+    <commons-compress.version>1.26.2</commons-compress.version>
+    <jjwt.version>0.12.6</jjwt.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>${jjwt.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>${jjwt.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>${jjwt.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>${java.version}</release>
+          <!--
+            Spring necesita los nombres reales de los parametros para resolver
+            @PathVariable y @RequestParam sin repetir el nombre en la anotacion.
+            Normalmente lo aporta spring-boot-starter-parent; aqui se declara.
+          -->
+          <parameters>true</parameters>
+        </configuration>
+      </plugin>
+    </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring-boot.version}</version>
+          <executions>
+            <!--
+              Sin spring-boot-starter-parent el goal repackage no se enlaza solo,
+              y sin el los jar salen delgados y no arrancan con java -jar.
+            -->
+            <execution>
+              <id>repackage</id>
+              <goals>
+                <goal>repackage</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

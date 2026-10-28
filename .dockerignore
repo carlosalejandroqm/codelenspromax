@@ -1,0 +1,9 @@
+**/target
+**/data
+**/node_modules
+**/.angular
+**/dist
+logs
+scripts
+.env
+**/.DS_Store

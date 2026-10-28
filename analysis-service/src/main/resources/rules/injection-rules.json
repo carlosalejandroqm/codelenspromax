@@ -1,0 +1,245 @@
+[
+  {
+    "id": "SQLI-STRING-CONCAT",
+    "name": "Consulta SQL construida por concatenacion",
+    "description": "La consulta se arma uniendo texto con variables, por lo que un valor controlado por el usuario puede alterar la sentencia y leer o borrar datos ajenos.",
+    "category": "SECURITY",
+    "severity": "CRITICAL",
+    "confidence": 0.8,
+    "cwe": "CWE-89",
+    "owasp": "A03:2021-Injection",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(select|insert\\s+into|update|delete\\s+from)\\b[^\"';]{0,200}[\"']{1,2}\\s*(\\+|\\.|%|&|\\|\\||,\\s*\\$|\\{)",
+    "notPattern": "(prepare|preparedstatement|\\?\\s*\\)|:\\w+\\s*\\)|@param)",
+    "remediation": "Usa consultas parametrizadas (PreparedStatement, parametros nombrados o el query builder del ORM) y nunca interpoles entrada del usuario en el SQL.",
+    "references": [
+      "https://cwe.mitre.org/data/definitions/89.html"
+    ]
+  },
+  {
+    "id": "SQLI-FORMAT-STRING",
+    "name": "Consulta SQL con interpolacion de formato",
+    "description": "Se interpola una variable dentro de la cadena SQL con f-strings o template literals. El resultado es identico a concatenar: la entrada pasa a formar parte de la sentencia.",
+    "category": "SECURITY",
+    "severity": "CRITICAL",
+    "confidence": 0.8,
+    "cwe": "CWE-89",
+    "owasp": "A03:2021-Injection",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(execute|executequery|query|raw|cursor\\.execute|db\\.query)\\s*\\(\\s*f?[\"'`][^\"'`]*(select|insert|update|delete)[^\"'`]*(\\$\\{|\\{[a-z_]|\\+)",
+    "remediation": "Pasa los valores como parametros de la consulta en lugar de formatearlos dentro del texto SQL.",
+    "references": [
+      "https://owasp.org/Top10/A03_2021-Injection/"
+    ],
+    "notPattern": "(\\{\\}\\s*[\"'`]\\s*,|:\\w+\\s*[\"'`]|@\\w+\\s*[\"'`])"
+  },
+  {
+    "id": "SQLI-PERCENT-FORMAT",
+    "name": "Consulta SQL formateada con el operador de formato",
+    "description": "La cadena SQL se completa con el operador % o con .format() antes de ejecutarse. A diferencia de los placeholders del driver, esto sustituye el texto sin escapar nada, por lo que la entrada altera la sentencia.",
+    "category": "SECURITY",
+    "severity": "CRITICAL",
+    "confidence": 0.8,
+    "cwe": "CWE-89",
+    "owasp": "A03:2021-Injection",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(execute|executequery|query|raw|cursor\\.execute|db\\.query)\\s*\\(\\s*[\"'`][^\"'`]*(select|insert|update|delete)[^\"'`]*[\"'`]\\s*(%\\s*[\\(\\w\\[]|\\.format\\s*\\()",
+    "remediation": "Pasa los valores como segundo argumento de execute (placeholders del driver) en lugar de formatearlos dentro del texto SQL.",
+    "references": [
+      "https://cwe.mitre.org/data/definitions/89.html"
+    ]
+  },
+  {
+    "id": "CMDI-SHELL-EXEC",
+    "name": "Ejecucion de comandos del sistema con entrada dinamica",
+    "description": "Se invoca un comando del sistema construido con variables. Un valor con ';', '&&' o '|' permite ejecutar comandos arbitrarios en el servidor.",
+    "category": "SECURITY",
+    "severity": "CRITICAL",
+    "confidence": 0.75,
+    "cwe": "CWE-78",
+    "owasp": "A03:2021-Injection",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(runtime\\.getruntime\\(\\)\\.exec|processbuilder|os\\.system|subprocess\\.(call|run|popen|check_output)|child_process\\.(exec|execsync)|shell_exec|passthru|popen|system)\\s*\\(\\s*[^)\"']*(\\+|\\$\\{|\\{|%s|f\"|`|\\.format|concat)",
+    "remediation": "Evita la shell: pasa el comando y sus argumentos como lista, valida contra una lista blanca y usa APIs nativas en lugar de comandos externos.",
+    "references": [
+      "https://cwe.mitre.org/data/definitions/78.html"
+    ]
+  },
+  {
+    "id": "CMDI-SHELL-TRUE",
+    "name": "Subproceso con shell habilitada",
+    "description": "Se lanza un subproceso con shell=True o equivalente, lo que expone el interprete de comandos al contenido de los argumentos.",
+    "category": "SECURITY",
+    "severity": "HIGH",
+    "confidence": 0.85,
+    "cwe": "CWE-78",
+    "owasp": "A03:2021-Injection",
+    "languages": [
+      "*"
+    ],
+    "pattern": "shell\\s*=\\s*true",
+    "remediation": "Pon shell=False (valor por defecto) y pasa los argumentos como lista.",
+    "references": [
+      "https://docs.python.org/3/library/subprocess.html#security-considerations"
+    ]
+  },
+  {
+    "id": "CODE-EVAL-DYNAMIC",
+    "name": "Evaluacion dinamica de codigo",
+    "description": "Se evalua codigo en tiempo de ejecucion a partir de una cadena. Si esa cadena depende de la entrada, el atacante ejecuta su propio codigo en el proceso.",
+    "category": "SECURITY",
+    "severity": "HIGH",
+    "confidence": 0.7,
+    "cwe": "CWE-95",
+    "owasp": "A03:2021-Injection",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(^|[^\\w.])(eval|exec)\\s*\\(|new\\s+Function\\s*\\(|setTimeout\\s*\\(\\s*[\"'`]|scriptengine\\.eval|assert\\s*\\(\\s*\\$",
+    "notPattern": "(evaluate\\(|eval\\(\\)|\\.eval\\s*=|#\\s*eval|evaluator)",
+    "remediation": "Sustituye eval por un parser especifico (JSON.parse, un interprete de expresiones con lista blanca) o por un mapa de funciones permitidas.",
+    "references": [
+      "https://cwe.mitre.org/data/definitions/95.html"
+    ]
+  },
+  {
+    "id": "XSS-INNER-HTML",
+    "name": "Escritura de HTML sin escapar",
+    "description": "Se asigna HTML directamente al DOM. Si el contenido viene del usuario, se ejecuta su JavaScript en el navegador de las victimas.",
+    "category": "SECURITY",
+    "severity": "HIGH",
+    "confidence": 0.7,
+    "cwe": "CWE-79",
+    "owasp": "A03:2021-Injection",
+    "languages": [
+      "javascript",
+      "typescript",
+      "html",
+      "php"
+    ],
+    "pattern": "(innerhtml|outerhtml)\\s*=|document\\.write\\s*\\(|insertadjacenthtml\\s*\\(|dangerouslysetinnerhtml|\\[innerhtml\\]\\s*=|v-html\\s*=",
+    "notPattern": "innerhtml\\s*=\\s*[\"'`]\\s*[\"'`]",
+    "remediation": "Usa textContent o el binding de texto del framework; si necesitas HTML, sanitizalo con DOMPurify o el sanitizador del framework.",
+    "references": [
+      "https://owasp.org/www-community/attacks/xss/"
+    ]
+  },
+  {
+    "id": "XSS-TEMPLATE-RAW",
+    "name": "Plantilla que emite valores sin escapar",
+    "description": "La plantilla imprime una variable desactivando el escapado automatico, lo que reintroduce el riesgo de XSS que el motor evitaba.",
+    "category": "SECURITY",
+    "severity": "HIGH",
+    "confidence": 0.75,
+    "cwe": "CWE-79",
+    "owasp": "A03:2021-Injection",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(\\|\\s*safe\\b|\\{\\{\\{|autoescape\\s+off|markupsafe\\.markup\\(|th:utext|raw\\s*=\\s*true|html_safe)",
+    "remediation": "Deja el escapado automatico activo y sanitiza explicitamente solo el fragmento que de verdad necesita HTML.",
+    "references": [
+      "https://owasp.org/Top10/A03_2021-Injection/"
+    ]
+  },
+  {
+    "id": "PATH-TRAVERSAL",
+    "name": "Ruta de archivo construida con entrada externa",
+    "description": "Se abre o escribe un archivo cuya ruta se concatena con una variable. Con '../' el atacante alcanza archivos fuera del directorio previsto.",
+    "category": "SECURITY",
+    "severity": "HIGH",
+    "confidence": 0.6,
+    "cwe": "CWE-22",
+    "owasp": "A01:2021-Broken Access Control",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(new\\s+file|fileinputstream|fileoutputstream|files\\.(read|write|newinputstream|newoutputstream)|open|readfile|fopen|file_get_contents|sendfile)\\s*\\(\\s*[^)\"']*(\\+|\\$\\{|\\{|%s|f\"|`|concat|params|query|body|args)",
+    "notPattern": "(getresourceasstream|classpath|__file__|dirname\\(__)",
+    "remediation": "Normaliza la ruta y verifica que el resultado siga dentro del directorio base; mejor aun, usa identificadores opacos en lugar de nombres de archivo del usuario.",
+    "references": [
+      "https://cwe.mitre.org/data/definitions/22.html"
+    ]
+  },
+  {
+    "id": "DESERIALIZE-UNSAFE",
+    "name": "Deserializacion insegura",
+    "description": "Se deserializan datos con un mecanismo capaz de instanciar clases arbitrarias, lo que puede derivar en ejecucion remota de codigo.",
+    "category": "SECURITY",
+    "severity": "CRITICAL",
+    "confidence": 0.8,
+    "cwe": "CWE-502",
+    "owasp": "A08:2021-Software and Data Integrity Failures",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(objectinputstream|readobject\\s*\\(|pickle\\.loads?|cpickle\\.loads?|yaml\\.load\\s*\\((?![^)]*safeloader)|marshal\\.loads|unserialize\\s*\\(|xstream\\.fromxml|binaryformatter)",
+    "remediation": "Usa formatos de datos sin codigo (JSON con esquema, Protobuf) o el cargador seguro del parser (yaml.safe_load), y firma los datos si deben viajar serializados.",
+    "references": [
+      "https://cwe.mitre.org/data/definitions/502.html"
+    ]
+  },
+  {
+    "id": "XXE-PARSER",
+    "name": "Parser XML sin proteccion contra entidades externas",
+    "description": "El parser XML se crea sin desactivar las entidades externas, lo que permite leer archivos del servidor o provocar peticiones internas.",
+    "category": "SECURITY",
+    "severity": "HIGH",
+    "confidence": 0.6,
+    "cwe": "CWE-611",
+    "owasp": "A05:2021-Security Misconfiguration",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(documentbuilderfactory\\.newinstance|saxparserfactory\\.newinstance|xmlinputfactory\\.newinstance|xmlreader|etree\\.parse|minidom\\.parse|simplexml_load)",
+    "notPattern": "(disallow-doctype-decl|setfeature|external-general-entities|resolve_entities\\s*=\\s*false|defusedxml)",
+    "remediation": "Desactiva DOCTYPE y las entidades externas en la factoria del parser, o usa una libreria endurecida (defusedxml).",
+    "references": [
+      "https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html"
+    ]
+  },
+  {
+    "id": "SSRF-DYNAMIC-URL",
+    "name": "Peticion HTTP a una URL construida dinamicamente",
+    "description": "Se realiza una peticion de salida hacia una URL que depende de variables. Sin validacion, el servidor puede ser usado para alcanzar servicios internos.",
+    "category": "SECURITY",
+    "severity": "MEDIUM",
+    "confidence": 0.5,
+    "cwe": "CWE-918",
+    "owasp": "A10:2021-Server-Side Request Forgery",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(new\\s+url\\s*\\(|httpclient|requests\\.(get|post|put|delete)|urlopen|fetch\\s*\\(|axios\\.(get|post)|resttemplate|webclient\\s*\\.)[^)\\n]*(\\+\\s*\\w|\\$\\{|f\"|\\{\\{|req\\.(query|body|params))",
+    "remediation": "Valida el host contra una lista blanca, prohibe rangos privados y resuelve la IP antes de conectar.",
+    "references": [
+      "https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/"
+    ]
+  },
+  {
+    "id": "LOG-INJECTION",
+    "name": "Registro de entrada sin sanear",
+    "description": "Se escribe entrada del usuario en el log sin limpiarla. Permite falsificar lineas de log y, en algunos motores, interpretar expresiones (estilo Log4Shell).",
+    "category": "SECURITY",
+    "severity": "LOW",
+    "confidence": 0.45,
+    "cwe": "CWE-117",
+    "owasp": "A09:2021-Security Logging and Monitoring Failures",
+    "languages": [
+      "*"
+    ],
+    "pattern": "(log|logger|logging)\\.(info|debug|warn|error|trace)\\s*\\(\\s*[^)]*(req\\.(body|query|params)|request\\.(get|form|args)|\\+\\s*(user|input|param|name|email))",
+    "remediation": "Escapa saltos de linea de los valores registrados y usa logging estructurado con parametros en lugar de concatenar.",
+    "references": [
+      "https://cwe.mitre.org/data/definitions/117.html"
+    ]
+  }
+]

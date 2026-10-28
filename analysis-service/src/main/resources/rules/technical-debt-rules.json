@@ -1,0 +1,102 @@
+[
+  {
+    "id": "DEBT-TODO-MARKER",
+    "name": "Trabajo pendiente declarado en comentarios",
+    "description": "El propio equipo marca trabajo sin terminar. Son puntos donde el comportamiento actual no es el previsto.",
+    "category": "TECHNICAL_DEBT",
+    "severity": "INFO",
+    "confidence": 0.95,
+    "languages": ["*"],
+    "scanComments": true,
+    "pattern": "\\b(todo|pendiente|por hacer)\\b",
+    "remediation": "Convierte cada marca en una tarea rastreable del backlog con responsable y fecha, o eliminala si ya no aplica.",
+    "references": []
+  },
+  {
+    "id": "DEBT-FIXME-MARKER",
+    "name": "Defecto conocido sin corregir",
+    "description": "Un comentario FIXME, HACK o XXX senala codigo que el equipo sabe que esta mal. Son candidatos directos a fallo en produccion.",
+    "category": "TECHNICAL_DEBT",
+    "severity": "LOW",
+    "confidence": 0.95,
+    "languages": ["*"],
+    "scanComments": true,
+    "pattern": "\\b(fixme|hack|xxx|kludge|workaround|no\\s*funciona|arreglar)\\b",
+    "remediation": "Abre un ticket con el impacto del defecto y programa la correccion; documenta el motivo si el workaround debe permanecer.",
+    "references": []
+  },
+  {
+    "id": "DEBT-COMMENTED-CODE",
+    "name": "Codigo comentado",
+    "description": "Hay bloques de codigo desactivados con comentarios. Ensucian la lectura y nadie sabe si siguen siendo validos.",
+    "category": "TECHNICAL_DEBT",
+    "severity": "INFO",
+    "confidence": 0.5,
+    "languages": ["*"],
+    "scanComments": true,
+    "pattern": "^\\s*(if|for|while|return|public|private|function|def|var|let|const|import|System\\.out|console\\.log|print)\\b[^.]*[;{)]\\s*$",
+    "remediation": "Borra el codigo comentado: el control de versiones ya guarda el historial.",
+    "references": []
+  },
+  {
+    "id": "DEBT-DEBUG-OUTPUT",
+    "name": "Salida de depuracion en el codigo",
+    "description": "Quedan impresiones de consola usadas para depurar. En produccion generan ruido y pueden volcar datos sensibles al log.",
+    "category": "MAINTAINABILITY",
+    "severity": "LOW",
+    "confidence": 0.7,
+    "languages": ["*"],
+    "pathExclude": "(test|spec|script|tool|cli|migration|seed)",
+    "pattern": "(system\\.out\\.print|system\\.err\\.print|console\\.(log|debug|dir)\\s*\\(|print\\s*\\(\\s*[\"'](debug|aqui|here|test|xxx)|printf\\s*\\(\\s*[\"']debug|var_dump\\s*\\(|dd\\s*\\(|fmt\\.print)",
+    "remediation": "Sustituye por el logger del proyecto con el nivel adecuado, o elimina la linea.",
+    "references": []
+  },
+  {
+    "id": "DEBT-MAGIC-NUMBER-SLEEP",
+    "name": "Espera fija en el codigo",
+    "description": "Hay una pausa con duracion fija. Las esperas arbitrarias esconden condiciones de carrera y ralentizan el sistema sin resolver la causa.",
+    "category": "MAINTAINABILITY",
+    "severity": "LOW",
+    "confidence": 0.75,
+    "languages": ["*"],
+    "pattern": "(thread\\.sleep\\s*\\(\\s*[0-9]{3,}|time\\.sleep\\s*\\(\\s*[0-9]+|settimeout\\s*\\([^,]+,\\s*[0-9]{4,}|sleep\\s+[0-9]+)",
+    "remediation": "Espera sobre una condicion observable (polling con timeout, callbacks, promesas) en lugar de un tiempo fijo.",
+    "references": []
+  },
+  {
+    "id": "DEBT-DEPRECATED-USAGE",
+    "name": "Uso de API marcada como obsoleta",
+    "description": "Se llama a algo declarado obsoleto. Desaparecera en una version futura y suele existir por un motivo de correccion o seguridad.",
+    "category": "MAINTAINABILITY",
+    "severity": "LOW",
+    "confidence": 0.6,
+    "languages": ["*"],
+    "pattern": "(@deprecated|\\bdeprecated\\b.*\\buse\\b|obsolete\\s*\\()",
+    "remediation": "Migra al reemplazo indicado en la documentacion antes de que se retire.",
+    "references": []
+  },
+  {
+    "id": "DEBT-BROAD-EXCEPTION",
+    "name": "Captura de excepcion demasiado amplia",
+    "description": "Se captura Exception, Throwable o equivalente. Oculta errores de programacion junto a los esperados y complica el diagnostico.",
+    "category": "MAINTAINABILITY",
+    "severity": "LOW",
+    "confidence": 0.7,
+    "languages": ["*"],
+    "pattern": "(catch\\s*\\(\\s*(exception|throwable|error)\\s|except\\s*:\\s*$|except\\s+(exception|baseexception)\\s*:|rescue\\s*=>\\s*e\\s*$|catch\\s*\\(\\s*\\w+\\s*:\\s*any)",
+    "remediation": "Captura los tipos concretos que sabes manejar y deja propagar el resto.",
+    "references": []
+  },
+  {
+    "id": "DEBT-DISABLED-TEST",
+    "name": "Prueba desactivada",
+    "description": "Hay pruebas anotadas como ignoradas o saltadas. La cobertura real es menor de lo que reporta la suite.",
+    "category": "TECHNICAL_DEBT",
+    "severity": "LOW",
+    "confidence": 0.85,
+    "languages": ["*"],
+    "pattern": "(@disabled|@ignore|\\bxit\\s*\\(|\\bxdescribe\\s*\\(|it\\.skip\\s*\\(|describe\\.skip\\s*\\(|@pytest\\.mark\\.skip|@unittest\\.skip|t\\.skip\\s*\\()",
+    "remediation": "Arregla la prueba o borrala; una prueba ignorada indefinidamente solo da falsa confianza.",
+    "references": []
+  }
+]

@@ -1,0 +1,292 @@
+/* ==========================================================================
+   CodeLens Pro Max - tokens de diseno
+   Los valores de color provienen de una paleta validada con el validador de
+   seis checks (banda de luminosidad, piso de croma, separacion CVD, piso de
+   vision normal, contraste). Se declaran como custom properties para que el
+   cambio de tema ocurra en un solo lugar.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* --- superficies e ink --- */
+  --surface-1: #fcfcfb;          /* superficie de tarjetas y graficos */
+  --surface-2: #f4f4f1;          /* superficie hundida (tracks, code) */
+  --page: #f9f9f7;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.10);
+
+  /* --- estado: paleta fija, nunca tematizada.
+         Siempre acompanada de icono y etiqueta, nunca color solo. --- */
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+
+  /* --- severidad: ramp ordinal de un solo tono, mas oscuro = mas grave --- */
+  --sev-info: #86b6ef;
+  --sev-low: #5598e7;
+  --sev-medium: #2a78d6;
+  --sev-high: #1c5cab;
+  --sev-critical: #104281;
+
+  /* --- categorico: orden fijo, nunca ciclado --- */
+  --cat-1: #2a78d6;
+  --cat-2: #eb6834;
+  --cat-3: #1baf7a;
+  --cat-4: #eda100;
+  --cat-5: #e87ba4;
+  --cat-6: #008300;
+  --cat-other: #898781;
+
+  --accent: #2a78d6;
+
+  /* --- espaciado y forma --- */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow: 0 1px 2px rgba(11, 11, 11, 0.06), 0 6px 16px rgba(11, 11, 11, 0.05);
+
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* Los valores oscuros se declaran en los dos ambitos: el media query cubre el
+   ajuste del sistema y el atributo data-theme cubre el interruptor del usuario,
+   que debe ganar en ambas direcciones. */
+@mixin dark-tokens {
+  color-scheme: dark;
+
+  --surface-1: #1a1a19;
+  --surface-2: #242423;
+  --page: #0d0d0d;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --border: rgba(255, 255, 255, 0.10);
+
+  --sev-info: #184f95;
+  --sev-low: #256abf;
+  --sev-medium: #3987e5;
+  --sev-high: #6da7ec;
+  --sev-critical: #9ec5f4;
+
+  --cat-1: #3987e5;
+  --cat-2: #d95926;
+  --cat-3: #199e70;
+  --cat-4: #c98500;
+  --cat-5: #d55181;
+  --cat-6: #008300;
+
+  --accent: #3987e5;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark-tokens;
+  }
+}
+
+:root[data-theme='dark'] {
+  @include dark-tokens;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.011em;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+code, pre, .mono {
+  font-family: var(--font-mono);
+}
+
+/* --- primitivas reutilizadas por las pantallas --- */
+
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.35rem;
+}
+
+.card__title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease, opacity 0.15s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border);
+
+  &:hover:not(:disabled) {
+    background: var(--surface-2);
+    filter: none;
+  }
+}
+
+.btn--danger {
+  background: var(--status-critical);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.field__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.field__hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.input {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font: inherit;
+
+  &:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+}
+
+/* Contenedor de desborde: el cuerpo de la pagina nunca scrollea en horizontal. */
+.scroll-x {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+
+  th, td {
+    text-align: left;
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid var(--grid);
+    vertical-align: top;
+  }
+
+  th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  td.num, th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.alert {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 0.9rem;
+}
+
+.alert--error {
+  border-color: color-mix(in oklab, var(--status-critical) 45%, var(--border));
+  background: color-mix(in oklab, var(--status-critical) 10%, var(--surface-1));
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

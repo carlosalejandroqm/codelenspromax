@@ -1,0 +1,68 @@
+[
+  {
+    "ecosystem": "npm",
+    "filePattern": "(^|/)package\\.json$",
+    "entryPattern": "\"(?<name>@?[A-Za-z0-9][A-Za-z0-9._/-]*)\"\\s*:\\s*\"(?<version>[\\^~>=<v\\s]*[0-9][^\"]*)\"",
+    "description": "Dependencias declaradas en package.json (npm, pnpm, yarn)."
+  },
+  {
+    "ecosystem": "npm",
+    "filePattern": "(^|/)composer\\.json$",
+    "entryPattern": "\"(?<name>[a-z0-9][a-z0-9._/-]*)\"\\s*:\\s*\"(?<version>[\\^~>=<v\\s]*[0-9][^\"]*)\"",
+    "description": "Dependencias de Composer (PHP); se indexan bajo el mismo formato clave-valor."
+  },
+  {
+    "ecosystem": "maven",
+    "filePattern": "(^|/)pom\\.xml$",
+    "entryPattern": "(?s)<artifactId>\\s*(?<name>[^<\\s]+)\\s*</artifactId>\\s*<version>\\s*(?<version>[0-9][^<\\s]*)\\s*</version>",
+    "description": "Dependencias de Maven declaradas con artifactId y version contiguos."
+  },
+  {
+    "ecosystem": "maven",
+    "filePattern": "(^|/)build\\.gradle(\\.kts)?$",
+    "entryPattern": "(?<ignoredGroup>[\"'])(?<groupId>[A-Za-z0-9._-]+):(?<name>[A-Za-z0-9._-]+):(?<version>[0-9][^\"']*)[\"']",
+    "description": "Coordenadas group:artifact:version de Gradle."
+  },
+  {
+    "ecosystem": "pypi",
+    "filePattern": "(^|/)requirements[\\w.-]*\\.txt$",
+    "entryPattern": "(?m)^\\s*(?<name>[A-Za-z0-9][A-Za-z0-9._-]*)\\s*(==|>=|<=|~=)\\s*(?<version>[0-9][^\\s;#]*)",
+    "description": "Dependencias pinneadas en requirements.txt."
+  },
+  {
+    "ecosystem": "pypi",
+    "filePattern": "(^|/)(pyproject\\.toml|Pipfile)$",
+    "entryPattern": "(?m)^\\s*(?<name>[A-Za-z0-9][A-Za-z0-9._-]*)\\s*=\\s*[\"'][\\^~>=<\\s]*(?<version>[0-9][^\"']*)[\"']",
+    "description": "Dependencias de Poetry o Pipenv en formato TOML."
+  },
+  {
+    "ecosystem": "go",
+    "filePattern": "(^|/)go\\.mod$",
+    "entryPattern": "(?m)^\\s+(?<name>[A-Za-z0-9][A-Za-z0-9./_-]*)\\s+v(?<version>[0-9][^\\s]*)",
+    "description": "Modulos requeridos en go.mod."
+  },
+  {
+    "ecosystem": "cargo",
+    "filePattern": "(^|/)Cargo\\.toml$",
+    "entryPattern": "(?m)^\\s*(?<name>[a-z0-9][a-z0-9_-]*)\\s*=\\s*[\"'][\\^~>=<\\s]*(?<version>[0-9][^\"']*)[\"']",
+    "description": "Dependencias de Cargo (Rust)."
+  },
+  {
+    "ecosystem": "rubygems",
+    "filePattern": "(^|/)Gemfile$",
+    "entryPattern": "(?m)^\\s*gem\\s+[\"'](?<name>[^\"']+)[\"']\\s*,\\s*[\"'][~><=\\s]*(?<version>[0-9][^\"']*)[\"']",
+    "description": "Gemas declaradas con version en el Gemfile."
+  },
+  {
+    "ecosystem": "nuget",
+    "filePattern": "\\.csproj$|(^|/)packages\\.config$",
+    "entryPattern": "(?i)(include|id)=\"(?<name>[^\"]+)\"\\s+version=\"(?<version>[0-9][^\"]*)\"",
+    "description": "PackageReference de .NET."
+  },
+  {
+    "ecosystem": "pub",
+    "filePattern": "(^|/)pubspec\\.yaml$",
+    "entryPattern": "(?m)^\\s{2}(?<name>[a-z0-9_]+)\\s*:\\s*[\\^~>=<\\s]*(?<version>[0-9][^\\s]*)",
+    "description": "Dependencias de Dart/Flutter."
+  }
+]

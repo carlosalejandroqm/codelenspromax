@@ -1,0 +1,92 @@
+# CodeLens: un contenedor por microservicio.
+#   docker compose up --build   ->  http://localhost:4200 (frontend) y http://localhost:8080 (gateway)
+# Solo el frontend y el gateway se publican; los servicios de dominio quedan en la red interna.
+name: codelens
+
+x-java-service: &java-service
+  restart: unless-stopped
+  environment: &java-env
+    JAVA_OPTS: -Xms64m -Xmx384m
+
+services:
+  user-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile
+    environment:
+      <<: *java-env
+      JWT_SECRET: ${JWT_SECRET:-codelens-dev-secret-cambiar-en-produccion-2026}
+    volumes:
+      - user-data:/app/data
+
+  source-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: source-service/Dockerfile
+    volumes:
+      - source-data:/app/data
+
+  analysis-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: analysis-service/Dockerfile
+    environment:
+      <<: *java-env
+      SOURCE_SERVICE_URL: http://source-service:8081
+    depends_on:
+      - source-service
+    volumes:
+      - analysis-data:/app/data
+
+  report-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: report-service/Dockerfile
+    environment:
+      <<: *java-env
+      ANALYSIS_SERVICE_URL: http://analysis-service:8082
+    depends_on:
+      - analysis-service
+    volumes:
+      - report-data:/app/data
+
+  gateway:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    environment:
+      <<: *java-env
+      JWT_SECRET: ${JWT_SECRET:-codelens-dev-secret-cambiar-en-produccion-2026}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:*,http://127.0.0.1:*}
+      USER_SERVICE_URI: http://user-service:8084
+      SOURCE_SERVICE_URI: http://source-service:8081
+      ANALYSIS_SERVICE_URI: http://analysis-service:8082
+      REPORT_SERVICE_URI: http://report-service:8083
+    depends_on:
+      - user-service
+      - source-service
+      - analysis-service
+      - report-service
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    environment:
+      GATEWAY_URL: http://gateway:8080
+    depends_on:
+      - gateway
+    ports:
+      - "4200:80"
+
+volumes:
+  user-data:
+  source-data:
+  analysis-data:
+  report-data:

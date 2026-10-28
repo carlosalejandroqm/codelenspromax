@@ -1,0 +1,64 @@
+/* Separacion de 2px en color de superficie entre segmentos que se tocan. */
+.stack {
+  display: flex;
+  height: 18px;
+  border-radius: 4px;
+  overflow: hidden;
+  gap: 2px;
+  background: var(--surface-2);
+}
+
+.stack__segment {
+  flex-grow: 0;
+  flex-shrink: 1;
+  min-width: 3px;
+}
+
+.legend {
+  list-style: none;
+  margin: 0.85rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.legend__item {
+  display: grid;
+  grid-template-columns: 10px 1fr auto auto;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.84rem;
+}
+
+.legend__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.legend__name {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legend__value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.legend__files {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 4.5rem;
+  text-align: right;
+}
+
+.empty-text {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}

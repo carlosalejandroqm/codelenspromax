@@ -1,0 +1,45 @@
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bars__row {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr 2.5rem;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bars__label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.bars__track {
+  height: 14px;
+  background: var(--surface-2);
+  border-radius: 3px;
+}
+
+/* Extremo del dato redondeado, cuadrado en la linea base. */
+.bars__bar {
+  height: 100%;
+  min-width: 3px;
+  border-radius: 0 4px 4px 0;
+  transition: width 0.4s ease;
+}
+
+.bars__value {
+  text-align: right;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.bars__empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}

@@ -1,0 +1,30 @@
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.tile__label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Cifras proporcionales: tabular-nums solo en columnas alineadas. */
+.tile__value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.tile__unit {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.tile__note {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}

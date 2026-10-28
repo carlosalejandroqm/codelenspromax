@@ -1,0 +1,44 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: source-service
+  datasource:
+    url: jdbc:h2:file:./data/source-db;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate.jdbc.batch_size: 100
+      hibernate.order_inserts: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+
+codelens:
+  storage:
+    workspace-root: ./data/workspaces
+    max-file-size-bytes: 2097152
+    max-snapshot-bytes: 314572800
+    max-files: 20000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.codelens: DEBUG
+    org.eclipse.jgit: WARN

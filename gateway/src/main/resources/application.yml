@@ -1,0 +1,61 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway
+  codec:
+    max-in-memory-size: 64MB
+  cloud:
+    gateway:
+      httpclient:
+        response-timeout: 300s
+        connect-timeout: 10000
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            # Lista separada por comas. En local se acepta cualquier puerto (ng serve puede
+            # no usar el 4200); en produccion se define con el dominio del frontend.
+            allowedOriginPatterns: ${CORS_ALLOWED_ORIGINS:http://localhost:*,http://127.0.0.1:*}
+            allowedMethods: [GET, POST, PUT, DELETE, OPTIONS]
+            allowedHeaders: "*"
+            allowCredentials: false
+            maxAge: 3600
+      # Los microservicios tambien responden cabeceras CORS (para pruebas directas);
+      # sin esto el navegador recibe Access-Control-Allow-Origin duplicado.
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials Vary, RETAIN_UNIQUE
+      routes:
+        - id: user-service
+          uri: ${USER_SERVICE_URI:http://localhost:8084}
+          predicates:
+            - Path=/api/v1/auth/**,/api/v1/users/**
+        - id: source-service
+          uri: ${SOURCE_SERVICE_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/sources/**
+        - id: analysis-service
+          uri: ${ANALYSIS_SERVICE_URI:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/analyses/**,/api/v1/rules/**,/api/v1/languages/**
+        - id: report-service
+          uri: ${REPORT_SERVICE_URI:http://localhost:8083}
+          predicates:
+            - Path=/api/v1/reports/**
+
+codelens:
+  security:
+    # Debe coincidir con el del user-service, que firma los tokens. Minimo 32 bytes.
+    jwt-secret: ${JWT_SECRET:codelens-dev-secret-cambiar-en-produccion-2026}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    # Un origen no permitido produce un 403 sin cuerpo; esto deja en el log cual fue.
+    org.springframework.web.cors.reactive.DefaultCorsProcessor: DEBUG

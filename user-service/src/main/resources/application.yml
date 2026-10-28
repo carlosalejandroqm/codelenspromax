@@ -1,0 +1,35 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:h2:file:./data/user-db;AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+codelens:
+  security:
+    # Debe coincidir con el del gateway, que valida los tokens. Minimo 32 bytes.
+    jwt-secret: ${JWT_SECRET:codelens-dev-secret-cambiar-en-produccion-2026}
+    token-ttl: ${JWT_TTL:8h}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.codelens: DEBUG

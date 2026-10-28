@@ -1,0 +1,21 @@
+# Imagen de analysis-service. Se construye desde la raiz del repo porque el pom padre
+# declara todos los modulos:  docker build -f analysis-service/Dockerfile .
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /build
+COPY pom.xml .
+COPY gateway/pom.xml gateway/
+COPY source-service/pom.xml source-service/
+COPY analysis-service/pom.xml analysis-service/
+COPY report-service/pom.xml report-service/
+COPY user-service/pom.xml user-service/
+COPY analysis-service/src analysis-service/src
+RUN mvn -B -q -pl analysis-service -am -DskipTests package
+
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /build/analysis-service/target/analysis-service.jar app.jar
+# H2 y workspaces viven en ./data (relativo a /app); montar un volumen para conservarlos.
+VOLUME /app/data
+ENV JAVA_OPTS="-Xms64m -Xmx384m"
+EXPOSE 8082
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]

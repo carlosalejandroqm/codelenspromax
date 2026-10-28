@@ -1,0 +1,19 @@
+# Builds
+**/target/
+frontend/dist/
+frontend/.angular/
+**/node_modules/
+
+# Datos locales (H2 y workspaces) y logs de scripts/run-local.sh
+data/
+**/data/
+logs/
+
+# Secretos
+.env
+
+.DS_Store
+*.log
+
+# Presentacion editable (el PDF va en docs/)
+*.pptx
